@@ -1,59 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-
-// @ts-ignore
-const getEthereumObject = () => window.ethereum;
-
-/*
- * This function returns the first linked account found.
- * If there is no account linked, it will return null.
- */
-const findMetaMaskAccount = async () => {
-  try {
-    const ethereum = getEthereumObject();
-
-    /*
-     * First make sure we have access to the Ethereum object.
-     */
-    if (!ethereum) {
-      console.error("Make sure you have Metamask!");
-      return null;
-    }
-
-    console.log("We have the Ethereum object", ethereum);
-    const accounts = await ethereum.request({ method: "eth_accounts" });
-
-    if (accounts.length !== 0) {
-      const account = accounts[0];
-      console.log("Found an authorized account:", account);
-      return account;
-    } else {
-      console.error("No authorized account found");
-      return null;
-    }
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+import { CONTRACT_ADDRESS, CONTRACT_INTERFACE } from "./constants";
+import { connectWallet, findMetaMaskAccount, getSigner, metamaskWindow } from "./services/metamask.service";
 
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
 
-  const connectWallet = async () => {
+  const connectToWallet = async () => {
     try {
-      const ethereum = getEthereumObject();
-      if (!ethereum) {
-        alert("Get MetaMask!");
-        return;
-      }
-
-      const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
-      });
-
-      console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
+      const account = await connectWallet();
+      setCurrentAccount(account);
     } catch (error) {
       console.error(error);
     }
@@ -61,61 +17,13 @@ const App = () => {
 
   const wave = async () => {
     try {
-      const ethereum = getEthereumObject();
-
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(
-          "0x82ec67fc81398b91c73064EfEed4621e336bA027",
-          [
-            {
-              inputs: [],
-              stateMutability: "nonpayable",
-              type: "constructor",
-            },
-            {
-              inputs: [],
-              name: "getTotalWaves",
-              outputs: [
-                {
-                  components: [
-                    {
-                      internalType: "address",
-                      name: "waver_address",
-                      type: "address",
-                    },
-                    {
-                      internalType: "uint256",
-                      name: "date",
-                      type: "uint256",
-                    },
-                  ],
-                  internalType: "struct WavePortal.Wave[]",
-                  name: "",
-                  type: "tuple[]",
-                },
-              ],
-              stateMutability: "view",
-              type: "function",
-            },
-            {
-              inputs: [],
-              name: "wave",
-              outputs: [],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-          ],
-          signer
-        );
+      if (metamaskWindow) {
+        const signer = getSigner();
+        const wavePortalContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_INTERFACE, signer);
 
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count);
 
-        /*
-         * Execute the actual wave from your smart contract
-         */
         const waveTxn = await wavePortalContract.wave();
         console.log("Mining...", waveTxn.hash);
 
@@ -132,10 +40,6 @@ const App = () => {
     }
   };
 
-  /*
-   * This runs our function when the page loads.
-   * More technically, when the App component "mounts".
-   */
   useEffect(() => {
     (async () => {
       const account = await findMetaMaskAccount();
@@ -148,22 +52,13 @@ const App = () => {
   return (
     <div className="mainContainer">
       <div className="dataContainer">
-        <div className="header">👋 Hey there!</div>
-
-        <div className="bio">
-          I am Farza and I worked on self-driving cars so that's pretty cool right? Connect your Ethereum wallet and wave at me!
-        </div>
-
-        <button className="waveButton" onClick={wave}>
-          Wave at Me
-        </button>
-
-        {/*
-         * If there is no currentAccount render this button
-         */}
-        {!currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
+        {!currentAccount ? (
+          <button className="waveButton" onClick={connectToWallet}>
             Connect Wallet
+          </button>
+        ) : (
+          <button className="waveButton" onClick={wave}>
+            Wave at Me
           </button>
         )}
       </div>
