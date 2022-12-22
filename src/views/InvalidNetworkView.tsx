@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 
-export const NoMetamaskView = () => (
+export const InvalidNetworkView = () => (
   <div
     style={{
       width: "100vw",
@@ -15,7 +15,7 @@ export const NoMetamaskView = () => (
     }}
   >
     <Typography variant="h3" gutterBottom>
-      Metamask Wallet is Missing!
+      Please switch to <span style={{ textDecoration: "underline", fontStyle: "italic" }}>Goerli test network</span> and refresh the page
     </Typography>
   </div>
 );

@@ -8,6 +8,7 @@ import { WaveTable } from "./components/WaveTable";
 import { InputForm } from "./components/InputForm";
 import { ConnectMetamaskView } from "./views/ConnectMetamaskView";
 import { WavesContext } from "./contexts/WavesContext";
+import { InvalidNetworkView } from "./views/InvalidNetworkView";
 
 const App = () => {
   const walletContext = useContext(WalletContext);
@@ -15,8 +16,13 @@ const App = () => {
 
   useEffect(() => {
     if (walletContext?.metamaskAccount) {
-      wavesContext?.fetchAndUpdateWaves(walletContext.getSigner());
-      wavesContext?.setNewWaveEventHandler(walletContext.getSigner());
+      (async () => {
+        const isNetworkGoerli = await walletContext.checkIfNetworkIsGoerli();
+        if (isNetworkGoerli) {
+          wavesContext?.fetchAndUpdateWaves(walletContext.getSigner());
+          wavesContext?.setNewWaveEventHandler(walletContext.getSigner());
+        }
+      })();
     }
   }, [walletContext?.metamaskAccount]);
 
@@ -28,6 +34,10 @@ const App = () => {
         <LoadingView />
       ) : !walletContext?.metamaskAccount ? (
         <ConnectMetamaskView />
+      ) : walletContext.isNetworkGoerli === undefined ? (
+        <LoadingView />
+      ) : walletContext.isNetworkGoerli === false ? (
+        <InvalidNetworkView />
       ) : (
         <Grid container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
           <InputForm />

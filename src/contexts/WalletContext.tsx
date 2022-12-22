@@ -7,6 +7,8 @@ type WalletContextType = {
   connectToWallet: () => void;
   isMetamaskAccountSearchLoading: boolean;
   getSigner: () => ethers.providers.JsonRpcSigner;
+  checkIfNetworkIsGoerli: () => Promise<boolean>;
+  isNetworkGoerli: boolean | undefined;
 };
 
 export const WalletContext = createContext<WalletContextType | null>(null);
@@ -16,6 +18,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const metamaskWallet = window.ethereum;
   const [metamaskAccount, setMetamaskAccount] = useState<any>();
   const [isMetamaskAccountSearchLoading, setIsMetamaskAccountSearchLoading] = useState(true);
+  const [isNetworkGoerli, setIsNetworkGoerli] = useState<boolean>();
 
   useEffect(() => {
     (async () => {
@@ -67,12 +70,25 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }) => {
     return signer;
   };
 
+  const checkIfNetworkIsGoerli = async () => {
+    const provider = new ethers.providers.Web3Provider(metamaskWallet);
+    const network = await provider.getNetwork();
+    if (network.name === "goerli") {
+      setIsNetworkGoerli(true);
+    } else {
+      setIsNetworkGoerli(false);
+    }
+    return network.name === "goerli";
+  };
+
   const value = {
     metamaskWallet,
     metamaskAccount,
     connectToWallet,
     isMetamaskAccountSearchLoading,
     getSigner,
+    checkIfNetworkIsGoerli,
+    isNetworkGoerli,
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
