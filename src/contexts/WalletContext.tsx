@@ -29,6 +29,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }) => {
         setIsMetamaskAccountSearchLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const findMetaMaskAccount = async () => {
