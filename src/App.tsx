@@ -1,30 +1,14 @@
-import { useContext, useEffect } from "react";
-import { Grid } from "@mui/material";
+import { useContext } from "react";
 import styles from "./app.module.css";
 import { LoadingView } from "./views/LoadingView";
 import { WalletContext } from "./contexts/WalletContext";
 import { NoMetamaskView } from "./views/NoMetamaskView";
-import { WaveTable } from "./components/WaveTable";
-import { InputForm } from "./components/InputForm";
 import { ConnectMetamaskView } from "./views/ConnectMetamaskView";
-import { WavesContext } from "./contexts/WavesContext";
 import { InvalidNetworkView } from "./views/InvalidNetworkView";
+import { HomeView } from "./views/HomeView";
 
 const App = () => {
   const walletContext = useContext(WalletContext);
-  const wavesContext = useContext(WavesContext);
-
-  useEffect(() => {
-    if (walletContext?.metamaskAccount) {
-      (async () => {
-        const isNetworkGoerli = await walletContext.checkIfNetworkIsGoerli();
-        if (isNetworkGoerli) {
-          wavesContext?.fetchAndUpdateWaves(walletContext.getSigner());
-          wavesContext?.setNewWaveEventHandler(walletContext.getSigner());
-        }
-      })();
-    }
-  }, [walletContext?.metamaskAccount]);
 
   return (
     <div className={styles.root}>
@@ -39,12 +23,7 @@ const App = () => {
       ) : walletContext.isNetworkGoerli === false ? (
         <InvalidNetworkView />
       ) : (
-        <Grid container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
-          <InputForm />
-          <Grid item xs={12} sm={10}>
-            <WaveTable waves={wavesContext?.waves || []} />
-          </Grid>
-        </Grid>
+        <HomeView />
       )}
     </div>
   );

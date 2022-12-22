@@ -25,6 +25,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }) => {
       const account = await findMetaMaskAccount();
       if (account !== null) {
         setMetamaskAccount(account);
+        await checkIfNetworkIsGoerli();
         setIsMetamaskAccountSearchLoading(false);
       }
     })();
