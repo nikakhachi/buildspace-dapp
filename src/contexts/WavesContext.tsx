@@ -17,12 +17,17 @@ export const WavesContext = createContext<WavesContextType | null>(null);
 export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [isMining, setIsMining] = useState(false);
   const [waves, setWaves] = useState<Wave[]>([]);
+  const [wavesContract, setWavesContract] = useState<ethers.Contract>();
 
-  const connectToWavePortalContract = (signer: ethers.Signer | ethers.providers.Provider | undefined) =>
-    new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_INTERFACE, signer);
+  const getWaveContract = (signer: ethers.Signer | ethers.providers.Provider | undefined): ethers.Contract => {
+    if (wavesContract) return wavesContract;
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_INTERFACE, signer);
+    setWavesContract(contract);
+    return contract;
+  };
 
   const fetchAndUpdateWaves = async (signer: ethers.providers.JsonRpcSigner) => {
-    const wavePortalContract = connectToWavePortalContract(signer);
+    const wavePortalContract = getWaveContract(signer);
     const wavesRaw = await wavePortalContract.getAllWaves();
     setWaves(
       wavesRaw
@@ -37,7 +42,7 @@ export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const handleWave = async (signer: ethers.providers.JsonRpcSigner, message: string) => {
     try {
-      const wavePortalContract = connectToWavePortalContract(signer);
+      const wavePortalContract = getWaveContract(signer);
       const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
       setIsMining(true);
       await waveTxn.wait();
@@ -48,7 +53,7 @@ export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   };
 
   const setNewWaveEventHandler = (signer: ethers.providers.JsonRpcSigner) => {
-    const wavePortalContract = connectToWavePortalContract(signer);
+    const wavePortalContract = getWaveContract(signer);
     wavePortalContract.provider.once("block", () => {
       wavePortalContract.on("NewWave", (from: string, timestamp: number, message: string) => {
         console.log("NewWave", from, timestamp, message);
