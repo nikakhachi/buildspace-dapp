@@ -49,16 +49,18 @@ export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const setNewWaveEventHandler = (signer: ethers.providers.JsonRpcSigner) => {
     const wavePortalContract = connectToWavePortalContract(signer);
-    wavePortalContract.on("NewWave", (from: string, timestamp: number, message: string) => {
-      console.log("NewWave", from, timestamp, message);
-      setWaves((prevState) => [
-        {
-          waver: from,
-          timestamp: timestamp,
-          message,
-        },
-        ...prevState,
-      ]);
+    wavePortalContract.provider.once("block", () => {
+      wavePortalContract.on("NewWave", (from: string, timestamp: number, message: string) => {
+        console.log("NewWave", from, timestamp, message);
+        setWaves((prevState) => [
+          {
+            waver: from,
+            timestamp: timestamp,
+            message,
+          },
+          ...prevState,
+        ]);
+      });
     });
   };
 
