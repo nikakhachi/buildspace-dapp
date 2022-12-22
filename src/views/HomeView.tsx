@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Grid } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import { WalletContext } from "../contexts/WalletContext";
 import { WaveTable } from "../components/WaveTable";
 import { InputForm } from "../components/InputForm";
@@ -23,7 +23,7 @@ export const HomeView = () => {
     <Grid container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
       <InputForm />
       <Grid item xs={12} sm={10}>
-        <WaveTable waves={wavesContext?.waves || []} />
+        {wavesContext?.areWavesLoading ? <CircularProgress size="1.5rem" /> : <WaveTable waves={wavesContext?.waves || []} />}
       </Grid>
     </Grid>
   );

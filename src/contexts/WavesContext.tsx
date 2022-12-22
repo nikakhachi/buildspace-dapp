@@ -10,6 +10,7 @@ type WavesContextType = {
   handleWave: (signer: ethers.providers.JsonRpcSigner, message: string) => Promise<void>;
   setWaves: (waves: Wave[]) => void;
   setNewWaveEventHandler: (signer: ethers.providers.JsonRpcSigner) => void;
+  areWavesLoading: boolean;
 };
 
 export const WavesContext = createContext<WavesContextType | null>(null);
@@ -17,6 +18,7 @@ export const WavesContext = createContext<WavesContextType | null>(null);
 export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [isMining, setIsMining] = useState(false);
   const [waves, setWaves] = useState<Wave[]>([]);
+  const [areWavesLoading, setAreWavesLoading] = useState(true);
   const [wavesContract, setWavesContract] = useState<ethers.Contract>();
 
   const getWaveContract = (signer: ethers.Signer | ethers.providers.Provider | undefined): ethers.Contract => {
@@ -27,6 +29,7 @@ export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
   };
 
   const fetchAndUpdateWaves = async (signer: ethers.providers.JsonRpcSigner) => {
+    setAreWavesLoading(true);
     const wavePortalContract = getWaveContract(signer);
     const wavesRaw = await wavePortalContract.getAllWaves();
     setWaves(
@@ -38,6 +41,7 @@ export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
         }))
         .sort((a: Wave, b: Wave) => b.timestamp - a.timestamp)
     );
+    setAreWavesLoading(false);
   };
 
   const handleWave = async (signer: ethers.providers.JsonRpcSigner, message: string) => {
@@ -76,6 +80,7 @@ export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
     handleWave,
     setWaves,
     setNewWaveEventHandler: (signer: ethers.providers.JsonRpcSigner) => setNewWaveEventHandler(signer),
+    areWavesLoading,
   };
 
   return <WavesContext.Provider value={value}>{children}</WavesContext.Provider>;
