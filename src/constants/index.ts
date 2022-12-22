@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x82ec67fc81398b91c73064EfEed4621e336bA027";
+export const CONTRACT_ADDRESS = "0x29A645b06d6b8178ac29A2cc892Ce74335A2Bf93";
 export const CONTRACT_INTERFACE = [
   {
     inputs: [],
@@ -6,19 +6,49 @@ export const CONTRACT_INTERFACE = [
     type: "constructor",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "timestamp",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "NewWave",
+    type: "event",
+  },
+  {
     inputs: [],
-    name: "getTotalWaves",
+    name: "getAllWaves",
     outputs: [
       {
         components: [
           {
             internalType: "address",
-            name: "waver_address",
+            name: "waver",
             type: "address",
           },
           {
+            internalType: "string",
+            name: "message",
+            type: "string",
+          },
+          {
             internalType: "uint256",
-            name: "date",
+            name: "timestamp",
             type: "uint256",
           },
         ],
@@ -32,6 +62,25 @@ export const CONTRACT_INTERFACE = [
   },
   {
     inputs: [],
+    name: "getTotalWaves",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_message",
+        type: "string",
+      },
+    ],
     name: "wave",
     outputs: [],
     stateMutability: "nonpayable",
