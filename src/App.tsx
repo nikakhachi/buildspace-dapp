@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { CONTRACT_ADDRESS, CONTRACT_INTERFACE } from "./constants";
 import { connectWallet, findMetaMaskAccount, getSigner, metamaskWindow } from "./services/metamask.service";
+import { connectToWavePortalContract } from "./services/web3.service";
 
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
@@ -19,7 +18,7 @@ const App = () => {
     try {
       if (metamaskWindow) {
         const signer = getSigner();
-        const wavePortalContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_INTERFACE, signer);
+        const wavePortalContract = connectToWavePortalContract(signer);
 
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count);
