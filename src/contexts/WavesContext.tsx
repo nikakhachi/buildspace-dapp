@@ -1,4 +1,4 @@
-import { createContext, useState, PropsWithChildren, useEffect } from "react";
+import { createContext, useState, PropsWithChildren } from "react";
 import { ethers } from "ethers";
 import { CONTRACT_ADDRESS, CONTRACT_INTERFACE } from "../constants";
 import { Wave } from "../types";
@@ -11,6 +11,7 @@ type WavesContextType = {
   setWaves: (waves: Wave[]) => void;
   setNewWaveEventHandler: (signer: ethers.providers.JsonRpcSigner) => void;
   areWavesLoading: boolean;
+  contractAddress?: string;
 };
 
 export const WavesContext = createContext<WavesContextType | null>(null);
@@ -81,6 +82,7 @@ export const WavesProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setWaves,
     setNewWaveEventHandler: (signer: ethers.providers.JsonRpcSigner) => setNewWaveEventHandler(signer),
     areWavesLoading,
+    contractAddress: wavesContract?.address,
   };
 
   return <WavesContext.Provider value={value}>{children}</WavesContext.Provider>;

@@ -3,9 +3,7 @@ import { Button, TextField, Typography, Grid, CircularProgress } from "@mui/mate
 import { WavesContext } from "../contexts/WavesContext";
 import { WalletContext } from "../contexts/WalletContext";
 
-interface IProps {}
-
-export const InputForm: React.FC<IProps> = ({}) => {
+export const InputForm = () => {
   const wavesContext = useContext(WavesContext);
   const walletContext = useContext(WalletContext);
   const [message, setMessage] = useState("");
@@ -19,8 +17,8 @@ export const InputForm: React.FC<IProps> = ({}) => {
 
   return (
     <>
-      <Typography variant="h2" gutterBottom>
-        ethereum-goerli
+      <Typography textAlign="center" variant="h2" gutterBottom>
+        Goerli Testnet Network
       </Typography>
       <Grid item xs={12} sm={8} md={6} sx={{ display: "flex", gap: "1rem" }}>
         <TextField

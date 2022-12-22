@@ -4,6 +4,7 @@ import { WalletContext } from "../contexts/WalletContext";
 import { WaveTable } from "../components/WaveTable";
 import { InputForm } from "../components/InputForm";
 import { WavesContext } from "../contexts/WavesContext";
+import { AboutContract } from "../components/AboutContract";
 
 export const HomeView = () => {
   const walletContext = useContext(WalletContext);
@@ -21,6 +22,7 @@ export const HomeView = () => {
 
   return (
     <Grid container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
+      <AboutContract />
       <InputForm />
       <Grid item xs={12} sm={10}>
         {wavesContext?.areWavesLoading ? <CircularProgress size="1.5rem" /> : <WaveTable waves={wavesContext?.waves || []} />}
