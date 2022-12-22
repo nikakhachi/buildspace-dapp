@@ -2,7 +2,6 @@
   padding-top: 5rem;
 }
 
-.unauthorizedDiv,
 .homePageDiv {
   display: flex;
   flex-direction: column;

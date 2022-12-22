@@ -1,8 +1,8 @@
-export const CONTRACT_ADDRESS = "0x29A645b06d6b8178ac29A2cc892Ce74335A2Bf93";
+export const CONTRACT_ADDRESS = "0x90dfc41f27b9Ec0F4Dc654Cc353A652bF433c35a";
 export const CONTRACT_INTERFACE = [
   {
     inputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "constructor",
   },
   {
@@ -63,6 +63,25 @@ export const CONTRACT_INTERFACE = [
   {
     inputs: [],
     name: "getTotalWaves",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "lastWavedAt",
     outputs: [
       {
         internalType: "uint256",

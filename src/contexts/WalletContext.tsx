@@ -1,0 +1,79 @@
+import { createContext, useState, PropsWithChildren, useEffect } from "react";
+import { ethers } from "ethers";
+
+type WalletContextType = {
+  metamaskWallet: any;
+  metamaskAccount: any;
+  connectToWallet: () => void;
+  isMetamaskAccountSearchLoading: boolean;
+  getSigner: () => ethers.providers.JsonRpcSigner;
+};
+
+export const WalletContext = createContext<WalletContextType | null>(null);
+
+export const WalletProvider: React.FC<PropsWithChildren> = ({ children }) => {
+  // @ts-ignore
+  const metamaskWallet = window.ethereum;
+  const [metamaskAccount, setMetamaskAccount] = useState<any>();
+  const [isMetamaskAccountSearchLoading, setIsMetamaskAccountSearchLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const account = await findMetaMaskAccount();
+      if (account !== null) {
+        setMetamaskAccount(account);
+        setIsMetamaskAccountSearchLoading(false);
+      }
+    })();
+  }, []);
+
+  const findMetaMaskAccount = async () => {
+    try {
+      if (!metamaskWallet) return null;
+
+      console.log("We have the Ethereum object", metamaskWallet);
+      const accounts = await metamaskWallet.request({ method: "eth_accounts" });
+
+      if (accounts.length !== 0) {
+        const account = accounts[0];
+        console.log("Found an authorized account:", account);
+        return account;
+      } else {
+        setIsMetamaskAccountSearchLoading(false);
+        console.error("No authorized account found");
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  const connectToWallet = async () => {
+    if (!metamaskWallet) return null;
+
+    const accounts = await metamaskWallet.request({
+      method: "eth_requestAccounts",
+    });
+
+    console.log("Connected", accounts[0]);
+    setMetamaskAccount(accounts[0]);
+    return accounts[0];
+  };
+
+  const getSigner = () => {
+    const provider = new ethers.providers.Web3Provider(metamaskWallet);
+    const signer = provider.getSigner();
+    return signer;
+  };
+
+  const value = {
+    metamaskWallet,
+    metamaskAccount,
+    connectToWallet,
+    isMetamaskAccountSearchLoading,
+    getSigner,
+  };
+
+  return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
+};
