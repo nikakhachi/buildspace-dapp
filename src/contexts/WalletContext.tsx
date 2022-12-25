@@ -63,6 +63,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     console.log("Connected", accounts[0]);
     setMetamaskAccount(accounts[0]);
+    checkIfNetworkIsGoerli();
     return accounts[0];
   };
 
